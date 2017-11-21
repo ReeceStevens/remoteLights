@@ -1,0 +1,7 @@
+[package]
+name = "remoteLight"
+version = "0.1.0"
+authors = ["madeleine"]
+
+[dependencies]
+wiringpi = "0.2"
