@@ -1,7 +1,10 @@
 [package]
+authors = ["madeleine"]
 name = "remoteLight"
 version = "0.1.0"
-authors = ["madeleine"]
 
 [dependencies]
+futures = "0.1.17"
+hyper = "0.11.7"
+tokio-core = "0.1.10"
 wiringpi = "0.2"

@@ -1,10 +1,20 @@
+extern crate wiringpi;
+extern crate futures;
+extern crate hyper;
+extern crate tokio_core;
+
 use wiringpi::pin::Value::{High, Low};
+
+use futures::{Future};
+use hyper::{Client, Uri};
+use tokio_core::reactor::Core;
+
 use std::{thread, time};
 
 fn main() {
     //Setup WiringPi with its own pin numbering order
     let pi = wiringpi::setup();
-   
+
     //Use WiringPi pin 0 as output
     let pin = pi.output_pin(22);
 
