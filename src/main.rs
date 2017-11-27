@@ -13,7 +13,7 @@ use std::{thread, time};
 
 fn main() {
     //Setup WiringPi with its own pin numbering order
-    let pi = wiringpi::setup();
+    let pi = wiringpi::setup_gpio();
 
     //Use WiringPi pin 0 as output
     let pin = pi.output_pin(22);
