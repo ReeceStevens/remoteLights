@@ -1,5 +1,5 @@
 [package]
-authors = ["madeleine"]
+authors = ["reece"]
 name = "remoteLight"
 version = "0.1.0"
 
@@ -7,4 +7,7 @@ version = "0.1.0"
 futures = "0.1.17"
 hyper = "0.11.7"
 tokio-core = "0.1.10"
-wiringpi = "0.2.1"
+
+[dependencies.wiringpi]
+optional = false
+path = "../rust-wiringpi"
