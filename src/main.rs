@@ -2,17 +2,21 @@ extern crate wiringpi;
 extern crate futures;
 extern crate hyper;
 extern crate tokio_core;
+extern crate serde_json;
 
 use wiringpi::pin::Value::{High, Low};
 use wiringpi::pin::Pin;
 
-use futures::{Future};
-use hyper::{Client, Uri};
+use futures::{Future, Stream};
+use hyper::{Client, Uri, Chunk};
 use tokio_core::reactor::Core;
+use serde_json::Value;
 
 use std::{thread, time};
 
 const INTERVAL: u8 = 500;
+const URL: &'static str = "http://reecestevens.me/remoteLights/_status";
+// const URL: &'static str = "http://127.0.0.1:5000/_status";
 
 pub fn<T: Pin> toggle_pin(pin: &T) {
     pin.digital_write(High);
@@ -34,6 +38,42 @@ impl Button {
     }
 }
 
+fn get_status() -> Vec<bool> {
+    let mut core = Core::new().unwrap();
+    let client = Client::new(&core.handle());
+    let url: Uri = URL.parse().unwrap();
+    let request = client.get(url).and_then(|res| {
+        res.body().concat2().and_then(move |body: Chunk| {
+            let v: Value = serde_json::from_slice(&body).unwrap();
+            Ok((v))
+        })
+    });
+    core.run(request).unwrap()
+}
+
+
+struct Operation {
+    idx: u8,
+    action: bool
+}
+
+/// get_operations(local_status, remote_status)
+///
+/// Calculate the operations required to transform {local_status} to {remote_status}.
+/// Returned as a vector of operations.
+fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Operation> {
+    let mut operations: Vec<Operation> = vec![];
+    for (idx, local_stat) in local_status.iter().enumerate)({
+        if local_stat != remote_status[idx] {
+            operations.push(Operation {
+                idx: idx,
+                action: !local_stat
+            });
+        }
+    }
+    operations
+}
+
 fn main() {
     //Setup WiringPi with its own pin numbering order
     let pi = wiringpi::setup_gpio();
@@ -51,18 +91,22 @@ fn main() {
         off_pin: pi.output_pin(21)
     };
 
+    local_status = vec![false, false, false];
+    buttons = vec![b1, b2, b3];
+
     loop {
-        b1.on();
         thread::sleep(INTERVAL);
-        b1.off();
-        thread::sleep(INTERVAL);
-        b2.on();
-        thread::sleep(INTERVAL);
-        b2.off();
-        thread::sleep(INTERVAL);
-        b3.on();
-        thread::sleep(INTERVAL);
-        b3.off();
-        thread::sleep(INTERVAL);
+        let remote_status: Vec<bool> = get_status();
+        let mut operations = get_operations(&local_status, &remote_status);
+
+        for operation in operations.iter() {
+            if operation.action {
+                buttons[operation.idx].on();
+            } else {
+                buttons[operation.idx].off();
+            }
+            local_status[operation.idx] = operation.action;
+        }
+
     }
 }
