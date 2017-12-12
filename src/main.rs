@@ -15,10 +15,10 @@ use serde_json::Value;
 use std::{thread, time};
 
 const INTERVAL: u8 = 500;
-const URL: &'static str = "http://reecestevens.me/remoteLights/_status";
+const URL: &'static str = "http://174.138.64.189/_status";
 // const URL: &'static str = "http://127.0.0.1:5000/_status";
 
-pub fn<T: Pin> toggle_pin(pin: &T) {
+pub<T: Pin> fn toggle_pin(pin: &T) {
     pin.digital_write(High);
     thread::sleep(INTERVAL);
     pin.digital_write(Low);
