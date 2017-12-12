@@ -29,7 +29,7 @@ struct Button<T: Pin> {
     off_pin: T
 }
 
-impl Button {
+impl Button<T: Pin> {
     pub fn on(&self) {
         toggle_pin(&self.on_pin)
     }
@@ -91,8 +91,8 @@ fn main() {
         off_pin: pi.output_pin(21)
     };
 
-    local_status = vec![false, false, false];
-    buttons = vec![b1, b2, b3];
+    let local_status = vec![false, false, false];
+    let buttons = vec![b1, b2, b3];
 
     loop {
         thread::sleep(INTERVAL);
