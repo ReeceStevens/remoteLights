@@ -24,7 +24,7 @@ pub fn toggle_pin<T: Pin>(pin: &T) {
     pin.digital_write(Low);
 }
 
-struct Button<T: Pin> {
+struct Button<T> {
     on_pin: T,
     off_pin: T
 }
@@ -53,7 +53,7 @@ fn get_status() -> Vec<bool> {
 
 
 struct Operation {
-    idx: u8,
+    idx: usize,
     action: bool
 }
 
