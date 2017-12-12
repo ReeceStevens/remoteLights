@@ -16,7 +16,7 @@ use std::time::Duration;
 
 type OutputPin = wiringpi::pin::OutputPin<wiringpi::pin::Gpio>;
 
-const INTERVAL: u8 = 500;
+const INTERVAL: u64 = 500;
 const URL: &'static str = "http://174.138.64.189/_status";
 // const URL: &'static str = "http://127.0.0.1:5000/_status";
 
