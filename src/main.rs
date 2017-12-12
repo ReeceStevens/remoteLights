@@ -93,7 +93,7 @@ fn main() {
         off_pin: pi.output_pin(21)
     };
 
-    let local_status = vec![false, false, false];
+    let mut local_status = vec![false, false, false];
     let buttons = vec![b1, b2, b3];
 
     loop {
