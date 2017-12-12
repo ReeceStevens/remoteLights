@@ -5,7 +5,6 @@ extern crate tokio_core;
 extern crate serde_json;
 
 use wiringpi::pin::Value::{High, Low};
-use wiringpi;
 
 use futures::{Future, Stream};
 use hyper::{Client, Uri, Chunk};
@@ -41,7 +40,7 @@ impl Button {
     }
 }
 
-fn get_status() -> Vec<bool> {
+fn get_status() -> serde_json::Value {
     let mut core = Core::new().unwrap();
     let client = Client::new(&core.handle());
     let url: Uri = URL.parse().unwrap();
@@ -67,7 +66,7 @@ struct Operation {
 fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Operation> {
     let mut operations: Vec<Operation> = vec![];
     for (idx, local_stat) in local_status.iter().enumerate(){
-        if local_stat != *remote_status[idx] {
+        if *local_stat != remote_status[idx] {
             operations.push(Operation {
                 idx: idx,
                 action: !local_stat
