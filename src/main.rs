@@ -16,13 +16,13 @@ use std::time::Duration;
 
 type OutputPin = wiringpi::pin::OutputPin<wiringpi::pin::Gpio>;
 
-const INTERVAL: Duration = Duration::from_millis(500);
+const INTERVAL: u8 = 500;
 const URL: &'static str = "http://174.138.64.189/_status";
 // const URL: &'static str = "http://127.0.0.1:5000/_status";
 
 pub fn toggle_pin(pin: &OutputPin) {
     pin.digital_write(High);
-    thread::sleep(INTERVAL);
+    thread::sleep(Duration:from_millis(INTERVAL));
     pin.digital_write(Low);
 }
 
@@ -97,7 +97,7 @@ fn main() {
     let buttons = vec![b1, b2, b3];
 
     loop {
-        thread::sleep(INTERVAL);
+        thread::sleep(Duration::from_millis(INTERVAL));
         let remote_status = get_status();
         let mut operations = get_operations(&local_status, &remote_status);
 
