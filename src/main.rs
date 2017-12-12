@@ -63,7 +63,7 @@ struct Operation {
 ///
 /// Calculate the operations required to transform {local_status} to {remote_status}.
 /// Returned as a vector of operations.
-fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Operation> {
+fn get_operations(local_status: &Vec<bool>, remote_status: &serde_json::Value) -> Vec<Operation> {
     let mut operations: Vec<Operation> = vec![];
     for (idx, local_stat) in local_status.iter().enumerate(){
         if *local_stat != remote_status[idx] {
@@ -98,7 +98,7 @@ fn main() {
 
     loop {
         thread::sleep(INTERVAL);
-        let remote_status: Vec<bool> = get_status();
+        let remote_status = get_status();
         let mut operations = get_operations(&local_status, &remote_status);
 
         for operation in operations.iter() {
