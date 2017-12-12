@@ -24,7 +24,7 @@ pub fn toggle_pin<T: Pin>(pin: &T) {
     pin.digital_write(Low);
 }
 
-struct<T: Pin> Button {
+struct Button<T: Pin> {
     on_pin: T,
     off_pin: T
 }
@@ -63,7 +63,7 @@ struct Operation {
 /// Returned as a vector of operations.
 fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Operation> {
     let mut operations: Vec<Operation> = vec![];
-    for (idx, local_stat) in local_status.iter().enumerate)({
+    for (idx, local_stat) in local_status.iter().enumerate(){
         if local_stat != remote_status[idx] {
             operations.push(Operation {
                 idx: idx,
