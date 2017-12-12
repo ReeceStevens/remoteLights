@@ -29,7 +29,7 @@ struct Button<T: Pin> {
     off_pin: T
 }
 
-impl Button<T: Pin> {
+impl<T: Pin> Button<T> {
     pub fn on(&self) {
         toggle_pin(&self.on_pin)
     }
