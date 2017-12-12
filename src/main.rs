@@ -22,7 +22,7 @@ const URL: &'static str = "http://174.138.64.189/_status";
 
 pub fn toggle_pin(pin: &OutputPin) {
     pin.digital_write(High);
-    thread::sleep(Duration:from_millis(INTERVAL));
+    thread::sleep(Duration::from_millis(INTERVAL));
     pin.digital_write(Low);
 }
 
