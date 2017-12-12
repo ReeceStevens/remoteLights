@@ -18,7 +18,7 @@ const INTERVAL: u8 = 500;
 const URL: &'static str = "http://174.138.64.189/_status";
 // const URL: &'static str = "http://127.0.0.1:5000/_status";
 
-pub<T: Pin> fn toggle_pin(pin: &T) {
+pub fn toggle_pin<T: Pin>(pin: &T) {
     pin.digital_write(High);
     thread::sleep(INTERVAL);
     pin.digital_write(Low);
