@@ -13,10 +13,11 @@ use tokio_core::reactor::Core;
 use serde_json::Value;
 
 use std::{thread, time};
+use std::time::Duration;
 
 type OutputPin = wiringpi::pin::OutputPin<wiringpi::pin::Gpio>;
 
-const INTERVAL: u8 = 500;
+const INTERVAL: Duration = Duration::from_millis(500);
 const URL: &'static str = "http://174.138.64.189/_status";
 // const URL: &'static str = "http://127.0.0.1:5000/_status";
 
@@ -66,7 +67,7 @@ struct Operation {
 fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Operation> {
     let mut operations: Vec<Operation> = vec![];
     for (idx, local_stat) in local_status.iter().enumerate(){
-        if local_stat != remote_status[idx] {
+        if local_stat != *remote_status[idx] {
             operations.push(Operation {
                 idx: idx,
                 action: !local_stat
