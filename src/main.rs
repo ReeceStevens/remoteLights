@@ -3,6 +3,8 @@ extern crate futures;
 extern crate hyper;
 extern crate tokio_core;
 extern crate serde_json;
+#[macro_use]
+extern crate log;
 
 use wiringpi::pin::Value::{High, Low};
 
@@ -97,10 +99,14 @@ fn main() {
     let buttons = vec![b1, b2, b3];
 
     loop {
+        info!("Sleeping");
         thread::sleep(Duration::from_millis(INTERVAL));
+        info!("Fetching remote status");
         let remote_status = get_status();
+        info!("Remote status fetched: ");
+        info!("{:?}", remote_status);
         let mut operations = get_operations(&local_status, &remote_status);
-
+        info!("Calculated {} operations to be completed.", operations.len());
         for operation in operations.iter() {
             if operation.action {
                 buttons[operation.idx].on();
