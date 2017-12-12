@@ -5,7 +5,7 @@ extern crate tokio_core;
 extern crate serde_json;
 
 use wiringpi::pin::Value::{High, Low};
-use wiringpi::pin::Pin;
+use wiringpi;
 
 use futures::{Future, Stream};
 use hyper::{Client, Uri, Chunk};
@@ -14,22 +14,24 @@ use serde_json::Value;
 
 use std::{thread, time};
 
+type OutputPin = wiringpi::pin::OutputPin<wiringpi::pin::Gpio>;
+
 const INTERVAL: u8 = 500;
 const URL: &'static str = "http://174.138.64.189/_status";
 // const URL: &'static str = "http://127.0.0.1:5000/_status";
 
-pub fn toggle_pin<T: Pin>(pin: &T) {
+pub fn toggle_pin(pin: &OutputPin) {
     pin.digital_write(High);
     thread::sleep(INTERVAL);
     pin.digital_write(Low);
 }
 
-struct Button<T> {
-    on_pin: T,
-    off_pin: T
+struct Button<> {
+    on_pin: OutputPin,
+    off_pin: OutputPin
 }
 
-impl<T: Pin> Button<T> {
+impl Button {
     pub fn on(&self) {
         toggle_pin(&self.on_pin)
     }
