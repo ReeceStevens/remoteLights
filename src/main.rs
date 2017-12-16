@@ -5,6 +5,7 @@ extern crate tokio_core;
 extern crate serde_json;
 #[macro_use]
 extern crate log;
+extern crate pretty_env_logger;
 
 use wiringpi::pin::Value::{High, Low};
 
@@ -78,6 +79,7 @@ fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Op
 }
 
 fn main() {
+    pretty_env_logger::init().unwrap();
     let url = format!("http://{}/_status", &env::var("SERVER").unwrap());
     //Setup WiringPi with its own pin numbering order
     let pi = wiringpi::setup_gpio();
@@ -100,7 +102,7 @@ fn main() {
     let remote_status = get_status(&url);
     let mut local_status = remote_status.clone();
     for (idx, stat) in local_status.iter().enumerate() {
-        if stat {
+        if *stat {
             buttons[idx].on();
         } else {
             buttons[idx].off();
