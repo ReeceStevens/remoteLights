@@ -20,7 +20,6 @@ use std::time::Duration;
 type OutputPin = wiringpi::pin::OutputPin<wiringpi::pin::Gpio>;
 
 const INTERVAL: u64 = 500;
-let URL: &'static str = format!("http://{}/_status", &env::var("SERVER"));
 
 pub fn toggle_pin(pin: &OutputPin) {
     pin.digital_write(High);
@@ -42,11 +41,11 @@ impl Button {
     }
 }
 
-fn get_status() -> Vec<bool> {
+fn get_status(url: &String) -> Vec<bool> {
     let mut core = Core::new().unwrap();
     let client = Client::new(&core.handle());
-    let url: Uri = URL.parse().unwrap();
-    let request = client.get(url).and_then(|res| {
+    let uri: Uri = url.parse().unwrap();
+    let request = client.get(uri).and_then(|res| {
         res.body().concat2().and_then(move |body: Chunk| {
             let v: Vec<bool> = serde_json::from_slice(&body).unwrap();
             Ok((v))
@@ -79,6 +78,7 @@ fn get_operations(local_status: &Vec<bool>, remote_status: &Vec<bool>) -> Vec<Op
 }
 
 fn main() {
+    let url = format!("http://{}/_status", &env::var("SERVER").unwrap());
     //Setup WiringPi with its own pin numbering order
     let pi = wiringpi::setup_gpio();
 
@@ -95,14 +95,23 @@ fn main() {
         off_pin: pi.output_pin(21)
     };
 
-    let mut local_status = vec![false, false, false];
     let buttons = vec![b1, b2, b3];
+
+    let remote_status = get_status(&url);
+    let mut local_status = remote_status.clone();
+    for (idx, stat) in local_status.iter().enumerate() {
+        if stat {
+            buttons[idx].on();
+        } else {
+            buttons[idx].off();
+        }
+    }
 
     loop {
         info!("Sleeping");
         thread::sleep(Duration::from_millis(INTERVAL));
         info!("Fetching remote status");
-        let remote_status = get_status();
+        let remote_status = get_status(&url);
         info!("Remote status fetched: ");
         info!("{:?}", remote_status);
         let operations = get_operations(&local_status, &remote_status);
