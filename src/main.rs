@@ -42,7 +42,7 @@ impl Button {
     }
 }
 
-fn get_status(url: &String) -> Result<Vec<bool>, _> {
+fn get_status(url: &String) -> Result<Vec<bool>, String> {
     let mut core = Core::new().unwrap();
     let client = Client::new(&core.handle());
     let uri: Uri = url.parse().unwrap();
