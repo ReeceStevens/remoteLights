@@ -28,7 +28,7 @@ pub fn toggle_pin(pin: &OutputPin) {
     pin.digital_write(Low);
 }
 
-struct Button<> {
+struct Button {
     on_pin: OutputPin,
     off_pin: OutputPin
 }
@@ -42,7 +42,7 @@ impl Button {
     }
 }
 
-fn get_status(url: &String) -> Vec<bool> {
+fn get_status(url: &String) -> Result<Vec<bool>, _> {
     let mut core = Core::new().unwrap();
     let client = Client::new(&core.handle());
     let uri: Uri = url.parse().unwrap();
@@ -52,7 +52,7 @@ fn get_status(url: &String) -> Vec<bool> {
             Ok((v))
         })
     });
-    core.run(request).unwrap()
+    core.run(request)
 }
 
 
@@ -99,7 +99,7 @@ fn main() {
 
     let buttons = vec![b1, b2, b3];
 
-    let remote_status = get_status(&url);
+    let remote_status = get_status(&url).unwrap();
     let mut local_status = remote_status.clone();
     for (idx, stat) in local_status.iter().enumerate() {
         if *stat {
@@ -113,7 +113,10 @@ fn main() {
         info!("Sleeping");
         thread::sleep(Duration::from_millis(INTERVAL));
         info!("Fetching remote status");
-        let remote_status = get_status(&url);
+        let remote_status = match get_status(&url) {
+            Ok(status) => status,
+            Err(_)     => continue
+        };
         info!("Remote status fetched: ");
         info!("{:?}", remote_status);
         let operations = get_operations(&local_status, &remote_status);
